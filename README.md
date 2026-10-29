@@ -2,11 +2,11 @@
 
 **Disciplina:** Estrutura de Dados & Análise de Algoritmos  
 **Tecnologias:** HTML5, CSS3 Moderno, JavaScript Puro (ES6+)  
-**Criador:** [Vitor](https://discord.com/users/754733356024987688)
+**Criador:** [Vitor Carvalho Silva](https://discord.com/users/754733356024987688)
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 Aplicação interativa desenvolvida para apresentação e ensino do algoritmo de ordenação **Heapsort** e da estrutura de dados **Heap Binário (Max-Heap e Min-Heap)**.
 
 A ferramenta exibe de maneira didática e separada:
@@ -15,7 +15,7 @@ A ferramenta exibe de maneira didática e separada:
 
 ---
 
-## 🚀 Como Executar
+## Como Executar
 
 Basta abrir o arquivo [`index.html`](./index.html) diretamente no seu navegador preferido (Google Chrome, Microsoft Edge, Firefox, Brave, etc.):
 
@@ -28,7 +28,7 @@ Basta abrir o arquivo [`index.html`](./index.html) diretamente no seu navegador 
 
 ---
 
-## 🌟 Ordem de Ordenação Conforme o Tipo de Heap
+## Ordem de Ordenação Conforme o Tipo de Heap
 
 - **Min-Heap ($A[\text{pai}] \le A[\text{filhos}]$):**
   - A raiz sempre contém o **menor elemento** do heap.
@@ -42,7 +42,7 @@ Basta abrir o arquivo [`index.html`](./index.html) diretamente no seu navegador 
 
 ---
 
-## ⚙️ Mapeamento Array $\leftrightarrow$ Árvore Binária
+## Mapeamento Array $\leftrightarrow$ Árvore Binária
 Para qualquer elemento ativo no índice $i$ do Heap:
 - **Pai:** $\lfloor (i - 1) / 2 \rfloor$
 - **Filho Esquerdo:** $2i + 1$
