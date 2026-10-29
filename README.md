@@ -1,6 +1,8 @@
 # Visualizador Interativo do Heapsort & Árvore Heap
+
 **Disciplina:** Estrutura de Dados & Análise de Algoritmos  
-**Tecnologias:** HTML5, CSS3 Moderno, JavaScript Puro (ES6+)
+**Tecnologias:** HTML5, CSS3 Moderno, JavaScript Puro (ES6+)  
+**Criador:** [Vitor](https://discord.com/users/754733356024987688)
 
 ---
 
