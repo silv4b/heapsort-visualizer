@@ -1,15 +1,17 @@
 # Visualizador Interativo do Heapsort & Árvore Heap
 
-**Disciplina:** Estrutura de Dados & Análise de Algoritmos  
-**Tecnologias:** HTML5, CSS3 Moderno, JavaScript Puro (ES6+)  
+**Disciplina:** Estrutura de Dados & Análise de Algoritmos
+**Tecnologias:** HTML5, CSS3 Moderno, JavaScript Puro (ES6+)
 **Criador:** [Vitor Carvalho Silva](https://discord.com/users/754733356024987688)
 
 ---
 
 ## Visão Geral
+
 Aplicação interativa desenvolvida para apresentação e ensino do algoritmo de ordenação **Heapsort** e da estrutura de dados **Heap Binário (Max-Heap e Min-Heap)**.
 
 A ferramenta exibe de maneira didática e separada:
+
 1. **Array Sendo Ordenado:** Exibe o resultado final sendo construído passo a passo, na ordem exata de extração da raiz.
 2. **Heap Ativo em Memória:** Exibe os elementos ativos do heap mapeados diretamente com os nós da **Árvore Binária Quase Completa em SVG**.
 
@@ -21,9 +23,11 @@ Basta abrir o arquivo [`index.html`](./index.html) diretamente no seu navegador 
 
 - **Caminho:** `heapsort_visualizer/index.html`
 - Ou execute no terminal/PowerShell:
+
   ```powershell
   Start-Process "heapsort_visualizer\index.html"
   ```
+
 - Ou execute o arquivo [`abrir_visualizador.bat`](../abrir_visualizador.bat).
 
 ---
@@ -43,7 +47,9 @@ Basta abrir o arquivo [`index.html`](./index.html) diretamente no seu navegador 
 ---
 
 ## Mapeamento Array $\leftrightarrow$ Árvore Binária
+
 Para qualquer elemento ativo no índice $i$ do Heap:
+
 - **Pai:** $\lfloor (i - 1) / 2 \rfloor$
 - **Filho Esquerdo:** $2i + 1$
 - **Filho Direito:** $2i + 2$
