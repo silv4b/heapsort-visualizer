@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador Interativo do Heapsort & Heap Tree</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="brand-badge">Estruturas de Dados Avançadas</div>
+        <h1 class="title">Visualizador Didático: <span class="gradient-text">Heapsort & Árvore Heap</span></h1>
+        <p class="subtitle">Insira elementos, visualize o mapeamento entre Array e Árvore Binária e acompanhe a ordenação passo a passo.</p>
+      </div>
+      
+      <div class="header-right">
+        <!-- SELETOR DE MODO HEAP -->
+        <div class="mode-selector-card">
+          <label class="mode-label">Tipo de Heap:</label>
+          <div class="toggle-group" id="heapModeToggle">
+            <button class="toggle-btn active" data-mode="max" id="btnMaxHeap" title="Pai ≥ Filhos (Extrai o maior sucessivamente → Ordem Decrescente)">
+              <span class="indicator max"></span> Max-Heap
+            </button>
+            <button class="toggle-btn" data-mode="min" id="btnMinHeap" title="Pai ≤ Filhos (Extrai o menor sucessivamente → Ordem Crescente)">
+              <span class="indicator min"></span> Min-Heap
+            </button>
+          </div>
+          <div class="mode-caption" id="modeDescription">
+            <strong>Max-Heap:</strong> Cada pai é maior ou igual aos seus filhos. Extrai o maior elemento sucessivamente gerando ordem <strong>decrescente</strong>.
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- BARRA DE OPERAÇÕES E CONTROLES DE DADOS -->
+    <section class="control-panel card">
+      <div class="panel-section">
+        <h3 class="section-title">1. Entrada de Dados</h3>
+        <div class="input-row">
+          <!-- Inserção individual -->
+          <form id="singleInsertForm" class="input-form">
+            <div class="input-group">
+              <input type="number" id="singleValueInput" placeholder="Ex: 42" min="-999" max="999" required>
+              <button type="submit" class="btn btn-primary" id="btnInsert">
+                <span class="icon">➕</span> Inserir no Heap
+              </button>
+            </div>
+          </form>
+
+          <!-- Ações Rápidas -->
+          <div class="quick-actions">
+            <button class="btn btn-secondary" id="btnRandomArray" title="Gera 8 a 12 valores aleatórios">
+              <span class="icon">🎲</span> Gerar Aleatório
+            </button>
+            <button class="btn btn-secondary" id="btnRebuildHeap" title="Restaura a propriedade de Heap para o array atual">
+              <span class="icon">🏗️</span> Construir Heap (O(n))
+            </button>
+            <button class="btn btn-danger" id="btnClear" title="Limpa todos os elementos">
+              <span class="icon">🗑️</span> Limpar
+            </button>
+          </div>
+        </div>
+
+        <!-- Entrada em Lote / Customizada -->
+        <div class="custom-array-row">
+          <input type="text" id="customArrayInput" placeholder="Ex: 15, 3, 20, 8, 42, 1, 35, 12" title="Valores separados por vírgula">
+          <button class="btn btn-secondary" id="btnLoadCustomArray">
+            <span class="icon">📥</span> Carregar Lista
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section section-sort">
+        <h3 class="section-title">2. Ordenação</h3>
+        <div class="sort-action-row">
+          <button class="btn btn-success btn-lg" id="btnStartHeapsort">
+            <span class="icon">⚡</span> Executar Heapsort
+          </button>
+          <span class="sort-hint" id="sortHintText">
+            No Max-Heap, a extração sucessiva do maior elemento produz ordem DECRESCENTE.
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE REPRODUÇÃO (PLAYBACK) -->
+    <section class="playback-bar card">
+      <div class="playback-controls">
+        <button class="btn-ctrl" id="btnFirstStep" title="Primeiro Passo (Início)" disabled>⏮</button>
+        <button class="btn-ctrl" id="btnPrevStep" title="Passo Anterior" disabled>◀</button>
+        <button class="btn-ctrl btn-play" id="btnPlayPause" title="Reproduzir / Pausar">
+          <span id="playPauseIcon">▶</span> <span id="playPauseText">Reproduzir</span>
+        </button>
+        <button class="btn-ctrl" id="btnNextStep" title="Próximo Passo" disabled>▶</button>
+        <button class="btn-ctrl" id="btnLastStep" title="Último Passo (Fim)" disabled>⏭</button>
+        <button class="btn-ctrl btn-reset" id="btnResetAnimation" title="Voltar ao início desta animação">↺ Reiniciar</button>
+      </div>
+
+      <div class="playback-status">
+        <span class="badge badge-step" id="stepCounterBadge">Passo 0 / 0</span>
+        <span class="badge badge-status" id="statusBadge">Pronto</span>
+      </div>
+
+      <div class="playback-speed">
+        <label for="speedRange">Velocidade:</label>
+        <input type="range" id="speedRange" min="200" max="2000" step="100" value="700">
+        <span id="speedValueText" class="speed-val">0.7s</span>
+      </div>
+    </section>
+
+    <!-- ÁREA PRINCIPAL DE VISUALIZAÇÃO (GRID) -->
+    <main class="main-visualization">
+      
+      <!-- COLUNA DA ESQUERDA: ARRAY + ÁRVORE HEAP -->
+      <div class="visual-column">
+        
+        <!-- VISUALIZAÇÃO DO ARRAY -->
+        <div class="visual-card card">
+          <div class="card-header">
+            <div class="header-title-group">
+              <h3>Estrutura em Array</h3>
+              <span class="helper-tag" id="sortOrderTag">Ordem Decrescente</span>
+            </div>
+            <div class="array-legend">
+              <span class="legend-item"><span class="legend-color color-sorted"></span> Elemento Ordenado</span>
+              <span class="legend-item"><span class="legend-color color-heap"></span> Heap Ativo</span>
+              <span class="legend-item"><span class="legend-color color-compare"></span> Comparando</span>
+              <span class="legend-item"><span class="legend-color color-swap"></span> Trocando</span>
+            </div>
+          </div>
+
+          <!-- SEÇÃO 1: ARRAY SENDO ORDENADO NA ORDEM EXATA DE EXTRAÇÃO -->
+          <div class="array-sub-section">
+            <div class="sub-section-header">
+              <div class="sub-title-group">
+                <span class="sub-title">Array Sendo Ordenado</span>
+                <span id="sortedOrderBadge" class="order-badge decrescente">Ordem Decrescente (Maior &rarr; Menor)</span>
+              </div>
+              <span class="sub-counter" id="sortedCounter">0 / 0 ordenados</span>
+            </div>
+            <div class="array-container-scroll">
+              <div class="array-display sorted-display" id="sortedArrayDisplay">
+                <!-- Células do array sendo ordenado -->
+              </div>
+            </div>
+          </div>
+
+          <!-- SEÇÃO 2: HEAP ATIVO EM MEMÓRIA (MAPEADO NA ÁRVORE) -->
+          <div class="array-sub-section heap-sub-section">
+            <div class="sub-section-header">
+              <div class="sub-title-group">
+                <span class="sub-title">Heap Ativo em Memória</span>
+                <span class="heap-badge">Mapeado com a Árvore Binária [0...n-1]</span>
+              </div>
+              <span class="sub-counter" id="heapCounter">0 elementos ativos</span>
+            </div>
+            <div class="array-container-scroll">
+              <div class="array-display" id="arrayDisplay">
+                <!-- Elementos do heap -->
+              </div>
+            </div>
+          </div>
+
+          <div class="array-indexes-guide">
+            <span class="formula-chip">Pai(i) = &lfloor;(i-1)/2&rfloor;</span>
+            <span class="formula-chip">Filho Esquerdo = 2i + 1</span>
+            <span class="formula-chip">Filho Direito = 2i + 2</span>
+          </div>
+        </div>
+
+        <!-- VISUALIZAÇÃO DA ÁRVORE HEAP (SVG) -->
+        <div class="visual-card card tree-card">
+          <div class="card-header">
+            <div class="header-title-group">
+              <h3>Estrutura Lógica: Árvore Binária Quase Completa</h3>
+              <span class="helper-tag" id="treeModeBadge">Max-Heap</span>
+            </div>
+            <div class="tree-stats" id="treeStats">
+              Nós no Heap Ativo: <strong id="heapSizeStat">0</strong> | Total no Conjunto: <strong id="totalElementsStat">0</strong>
+            </div>
+          </div>
+
+          <div class="tree-viewport-container">
+            <svg id="heapTreeSvg" class="heap-tree-svg" preserveAspectRatio="xMidYMin meet">
+              <defs>
+                <!-- Gradientes e Filtros para Nós -->
+                <linearGradient id="gradNodeNormal" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#3b82f6" />
+                  <stop offset="100%" stop-color="#1d4ed8" />
+                </linearGradient>
+                <linearGradient id="gradNodeCompare" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </linearGradient>
+                <linearGradient id="gradNodeSwap" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fbbf24" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+                <linearGradient id="gradNodeSorted" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34d399" />
+                  <stop offset="100%" stop-color="#059669" />
+                </linearGradient>
+                <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              <g id="svgLinksGroup"></g>
+              <g id="svgNodesGroup"></g>
+            </svg>
+            <div id="treeEmptyMessage" class="empty-state">
+              <span class="empty-icon">🌳</span>
+              <p>O heap está vazio no momento.</p>
+              <small>Insira números acima ou gere uma lista aleatória para visualizar a árvore.</small>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUNA DA DIREITA: EXPLICAÇÃO DETALHADA E PSEUDOCÓDIGO -->
+      <aside class="info-column">
+        
+        <!-- CARD DE COMENTÁRIO DIDÁTICO / LOG DO PASSO -->
+        <div class="info-card card">
+          <div class="card-header">
+            <h3>Explicação do Passo Atual</h3>
+            <span class="badge badge-pulse" id="stepActionBadge">Aguardando</span>
+          </div>
+          <div class="step-explanation-box" id="stepExplanation">
+            <p class="placeholder-text">Clique em <strong>"Executar Heapsort"</strong> ou <strong>"Inserir no Heap"</strong> para acompanhar a execução didática e detalhada de cada comparação e troca.</p>
+          </div>
+        </div>
+
+        <!-- CARD DE PSEUDOCÓDIGO COM HIGHLIGHT -->
+        <div class="info-card card code-card">
+          <div class="card-header">
+            <h3>Algoritmo em Execução</h3>
+            <div class="pseudocode-tabs">
+              <button class="code-tab-btn active" data-tab="heapsort">Heapsort</button>
+              <button class="code-tab-btn" data-tab="heapify">Heapify (Descer)</button>
+              <button class="code-tab-btn" data-tab="siftup">Sift-Up (Subir)</button>
+            </div>
+          </div>
+
+          <!-- BLOCO HEAPSORT -->
+          <div class="code-content active" id="tabContent-heapsort">
+            <pre class="code-block">
+<span class="code-line" id="code-hs-1"><span class="keyword">procedimento</span> heapsort(A):</span>
+<span class="code-line" id="code-hs-2">  n &larr; tamanho(A), ordenados &larr; []</span>
+<span class="code-line" id="code-hs-3">  <span class="comment">// 1. Transforma o array em Heap O(n)</span></span>
+<span class="code-line" id="code-hs-4">  construirHeap(A, n)</span>
+<span class="code-line" id="code-hs-5">  <span class="comment">// 2. Extrai raiz sucessivamente na ordem</span></span>
+<span class="code-line" id="code-hs-6">  <span class="keyword">enquanto</span> heapSize &gt; 0:</span>
+<span class="code-line" id="code-hs-7">    raiz &larr; extrairRaiz(A)  <span class="comment">// Vai para o array ordenado</span></span>
+<span class="code-line" id="code-hs-8">    ordenados.anexar(raiz) <span class="comment">// Na ordem exata (Max=Decrescente, Min=Crescente)</span></span>
+<span class="code-line" id="code-hs-9">    heapify(A, heapSize, 0) <span class="comment">// Restaura heap</span></span>
+            </pre>
+          </div>
+
+          <!-- BLOCO HEAPIFY (SIFT-DOWN) -->
+          <div class="code-content" id="tabContent-heapify">
+            <pre class="code-block">
+<span class="code-line" id="code-hf-1"><span class="keyword">procedimento</span> heapify(A, n, i):</span>
+<span class="code-line" id="code-hf-2">  alvo &larr; i, esq &larr; 2*i + 1, dir &larr; 2*i + 2</span>
+<span class="code-line" id="code-hf-3">  <span class="comment">// Compara com filho esquerdo</span></span>
+<span class="code-line" id="code-hf-4">  <span class="keyword">se</span> esq &lt; n <span class="keyword">e</span> A[esq] melhorQue A[alvo]: alvo &larr; esq</span>
+<span class="code-line" id="code-hf-5">  <span class="comment">// Compara com filho direito</span></span>
+<span class="code-line" id="code-hf-6">  <span class="keyword">se</span> dir &lt; n <span class="keyword">e</span> A[dir] melhorQue A[alvo]: alvo &larr; dir</span>
+<span class="code-line" id="code-hf-7">  <span class="comment">// Se o melhor não for a raiz, troca e propaga</span></span>
+<span class="code-line" id="code-hf-8">  <span class="keyword">se</span> alvo &ne; i:</span>
+<span class="code-line" id="code-hf-9">    trocar(A[i], A[alvo])</span>
+<span class="code-line" id="code-hf-10">    heapify(A, n, alvo)</span>
+            </pre>
+          </div>
+
+          <!-- BLOCO SIFT-UP (INSERÇÃO) -->
+          <div class="code-content" id="tabContent-siftup">
+            <pre class="code-block">
+<span class="code-line" id="code-su-1"><span class="keyword">procedimento</span> inserir(A, valor):</span>
+<span class="code-line" id="code-su-2">  A.anexar(valor)</span>
+<span class="code-line" id="code-su-3">  i &larr; tamanho(A) - 1</span>
+<span class="code-line" id="code-su-4">  <span class="comment">// Sobe o elemento enquanto violar o heap</span></span>
+<span class="code-line" id="code-su-5">  <span class="keyword">enquanto</span> i &gt; 0:</span>
+<span class="code-line" id="code-su-6">    pai &larr; &lfloor;(i - 1) / 2&rfloor;</span>
+<span class="code-line" id="code-su-7">    <span class="keyword">se</span> A[i] violaHeap A[pai]:</span>
+<span class="code-line" id="code-su-8">      trocar(A[i], A[pai])</span>
+<span class="code-line" id="code-su-9">      i &larr; pai</span>
+<span class="code-line" id="code-su-10">    <span class="keyword">senão</span>: <span class="keyword">interromper</span></span>
+            </pre>
+          </div>
+        </div>
+
+        <!-- CARD DE RESUMO TEÓRICO & COMPLEXIDADES -->
+        <div class="info-card card theoretical-card">
+          <div class="card-header">
+            <h3>Propriedades & Complexidade</h3>
+          </div>
+          <div class="theory-table-wrapper">
+            <table class="theory-table">
+              <thead>
+                <tr>
+                  <th>Operação</th>
+                  <th>Melhor Caso</th>
+                  <th>Caso Médio</th>
+                  <th>Pior Caso</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Construir Heap</td>
+                  <td><span class="badge-math">O(n)</span></td>
+                  <td><span class="badge-math">O(n)</span></td>
+                  <td><span class="badge-math">O(n)</span></td>
+                </tr>
+                <tr>
+                  <td>Inserção (Sift-Up)</td>
+                  <td><span class="badge-math">O(1)</span></td>
+                  <td><span class="badge-math">O(log n)</span></td>
+                  <td><span class="badge-math">O(log n)</span></td>
+                </tr>
+                <tr>
+                  <td>Heapsort Completo</td>
+                  <td><span class="badge-math">O(n log n)</span></td>
+                  <td><span class="badge-math">O(n log n)</span></td>
+                  <td><span class="badge-math">O(n log n)</span></td>
+                </tr>
+                <tr>
+                  <td>Ordem Min-Heap</td>
+                  <td colspan="3"><span class="badge-math" style="color: #34d399;">Crescente (Menor &rarr; Maior)</span></td>
+                </tr>
+                <tr>
+                  <td>Ordem Max-Heap</td>
+                  <td colspan="3"><span class="badge-math" style="color: #38bdf8;">Decrescente (Maior &rarr; Menor)</span></td>
+                </tr>
+                <tr>
+                  <td>Estabilidade</td>
+                  <td colspan="3"><span class="badge-math badge-unstable">Não Estável</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>Desenvolvido para apresentação acadêmica de <strong>Estrutura de Dados & Algoritmos de Ordenação</strong> &bull; Heapsort Didático</p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
